@@ -1,0 +1,6 @@
+BETTER_AUTH_SECRET="replace-with-at-least-32-random-characters"
+# @feature billing
+STRIPE_SECRET_KEY=""
+# From `stripe listen --forward-to localhost:4300/api/auth/stripe/webhook --print-secret`
+STRIPE_WEBHOOK_SECRET=""
+# @end billing

@@ -1,0 +1,27 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "super-seed",
+  "main": "src/server.ts",
+  "compatibility_date": "2026-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "routes": [{ "pattern": "super-seed.example.com", "custom_domain": true }],
+  "observability": { "enabled": true },
+  "send_email": [{ "name": "EMAIL" }],
+  "secrets": {
+    "required": [
+      "BETTER_AUTH_SECRET",
+      // @feature billing
+      "STRIPE_SECRET_KEY",
+      "STRIPE_WEBHOOK_SECRET",
+      // @end billing
+    ],
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "super-seed",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations",
+    },
+  ],
+}

@@ -1,0 +1,7 @@
+{
+  "ignorePatterns": [
+    "src/routeTree.gen.ts",
+    "src/db/schema.generated.ts",
+    "worker-configuration.d.ts"
+  ]
+}

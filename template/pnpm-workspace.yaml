@@ -1,0 +1,7 @@
+minimumReleaseAge: 1440
+allowBuilds:
+  better-sqlite3: true
+  esbuild: true
+  lightningcss: true
+  sharp: true
+  workerd: true
