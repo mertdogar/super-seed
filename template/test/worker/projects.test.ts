@@ -1,4 +1,6 @@
+// @feature billing
 import { env } from "cloudflare:workers";
+// @end billing
 import { describe, expect, it } from "vitest";
 
 import { call, json, owner } from "./helpers";

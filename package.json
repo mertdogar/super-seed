@@ -1,0 +1,38 @@
+{
+  "name": "@super-seed/create",
+  "version": "0.1.0",
+  "description": "Create a Cloudflare SaaS app with accounts, organizations, billing and a typed API",
+  "license": "MIT",
+  "bin": {
+    "create-super-seed": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "template"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "node --test test/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "oxlint .",
+    "format": "oxfmt --write .",
+    "format:check": "oxfmt --check .",
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test && pnpm build",
+    "prepack": "pnpm build && cp template/.gitignore template/_gitignore",
+    "postpack": "rm template/_gitignore"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "oxfmt": "^0.71.0",
+    "oxlint": "^1.86.0",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=22.18"
+  },
+  "packageManager": "pnpm@11.9.0"
+}

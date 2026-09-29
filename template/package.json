@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.9.0",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
@@ -18,6 +17,7 @@
     "db:types": "node scripts/db-types.ts",
     "db:migrate:local": "wrangler d1 migrations apply super-seed --local",
     "db:migrate:remote": "wrangler d1 migrations apply super-seed --remote",
+    "setup:local": "wrangler types && node scripts/db-types.ts && tsr generate && wrangler d1 migrations apply super-seed --local",
     "setup:remote": "node scripts/setup-remote.ts",
     "email": "email dev --dir src/emails --port 3030",
     "check": "pnpm types && node scripts/db-types.ts --verify && pnpm typecheck && pnpm lint && pnpm format:check && pnpm build && pnpm test",
@@ -68,5 +68,6 @@
     "vite": "^8.3.1",
     "vitest": "^4.1.11",
     "wrangler": "^4.143.0"
-  }
+  },
+  "packageManager": "pnpm@11.9.0"
 }

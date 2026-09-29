@@ -1,0 +1,4 @@
+{
+  "printWidth": 100,
+  "ignorePatterns": ["template/**", "dist/**", "pnpm-lock.yaml"]
+}

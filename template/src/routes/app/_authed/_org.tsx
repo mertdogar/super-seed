@@ -73,7 +73,7 @@ const nav: NavItem[] = [
 ];
 
 function OrgLayout() {
-  const { session, role } = Route.useRouteContext();
+  const { role } = Route.useRouteContext();
   return (
     <div className="min-h-dvh md:grid md:grid-cols-[240px_1fr]">
       <aside className="flex flex-col gap-4 border-b bg-muted/40 p-4 md:sticky md:top-0 md:h-dvh md:border-r md:border-b-0">
@@ -86,9 +86,7 @@ function OrgLayout() {
               <NavLink key={item.label} {...item} />
             ))}
           {/* @feature operator */}
-          {session.user.role === "admin" && (
-            <NavLink label="Operator" icon={ShieldCheck} link={{ to: "/app/operator" }} />
-          )}
+          <OperatorLink />
           {/* @end operator */}
           {/* @feature api-reference */}
           <a
@@ -206,6 +204,12 @@ function UserMenu() {
 }
 
 // @feature operator
+function OperatorLink() {
+  const { session } = Route.useRouteContext();
+  if (session.user.role !== "admin") return null;
+  return <NavLink label="Operator" icon={ShieldCheck} link={{ to: "/app/operator" }} />;
+}
+
 function ImpersonationBanner() {
   const { session } = Route.useRouteContext();
   const switchTo = useSwitch();

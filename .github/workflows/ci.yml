@@ -1,0 +1,47 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  cli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+
+  template:
+    name: template (${{ matrix.features }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        features:
+          - projects,billing,api-keys,operator,api-reference
+          - none
+          - billing,api-keys,operator,api-reference
+          - projects,api-keys,operator,api-reference
+          - projects,billing,operator,api-reference
+          - projects,billing,api-keys,api-reference
+          - projects,billing,api-keys,operator
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            template/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: node src/cli.ts "$RUNNER_TEMP/app" --yes --no-git --features "${{ matrix.features }}"
+      - run: pnpm check
+        working-directory: ${{ runner.temp }}/app
