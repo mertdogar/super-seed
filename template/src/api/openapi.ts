@@ -26,14 +26,18 @@ const security: Record<Mode, Record<string, string[]>[]> = {
     { session: [] },
   ],
   orgAdmin: [{ session: [] }],
+  // @feature operator
   operator: [{ session: [] }],
+  // @end operator
 };
 
 const callerErrors: Record<Exclude<Mode, "none">, Record<string, number>> = {
   user: { unauthorized: 401 },
   tenant: { unauthorized: 401, no_active_organization: 403, forbidden: 403 },
   orgAdmin: { unauthorized: 401, no_active_organization: 403, forbidden: 403 },
+  // @feature operator
   operator: { unauthorized: 401, forbidden: 403 },
+  // @end operator
 };
 
 function errors(route: PublicRoute) {

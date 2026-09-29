@@ -161,7 +161,7 @@ progress.stop(`Created ${displayName} in ${targetDir}`);
 if (install) {
   if (!succeeds("pnpm", ["--version"], targetDir))
     fail(
-      "pnpm is not installed. Run `corepack enable pnpm`, then `pnpm install && pnpm setup:local`.",
+      "pnpm is not installed. Run `corepack enable pnpm`, then `pnpm install && pnpm setup:local && pnpm format`.",
     );
   log.step("Installing dependencies");
   run("pnpm", ["install", "--no-frozen-lockfile"], targetDir);
@@ -187,7 +187,7 @@ const relative = path.relative(process.cwd(), targetDir) || ".";
 note(
   [
     `cd ${relative}`,
-    ...(install ? [] : ["pnpm install && pnpm setup:local"]),
+    ...(install ? [] : ["pnpm install && pnpm setup:local && pnpm format"]),
     "pnpm dev              # http://localhost:4300",
     "pnpm setup:remote     # when you're ready to deploy",
   ].join("\n"),

@@ -14,7 +14,15 @@ export type Actor =
 
 export type Tenant = { organizationId: string; actor: Actor };
 
-export type Mode = "none" | "user" | "tenant" | "orgAdmin" | "operator";
+export type Mode =
+  | "none"
+  | "user"
+  | "tenant"
+  | "orgAdmin"
+  // @feature operator
+  | "operator"
+  // @end operator
+  | never;
 
 export type CallerFor<M extends Mode> = M extends "none"
   ? undefined
