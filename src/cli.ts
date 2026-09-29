@@ -164,7 +164,7 @@ if (install) {
       "pnpm is not installed. Run `corepack enable pnpm`, then `pnpm install && pnpm setup:local`.",
     );
   log.step("Installing dependencies");
-  run("pnpm", ["install"], targetDir);
+  run("pnpm", ["install", "--no-frozen-lockfile"], targetDir);
   log.step("Generating types and migrating the local database");
   run("pnpm", ["run", "setup:local"], targetDir);
   run("pnpm", ["exec", "oxfmt", "--write", "."], targetDir);
