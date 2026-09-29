@@ -2,7 +2,7 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "super-seed",
   "main": "src/server.ts",
-  "compatibility_date": "2026-09-01",
+  "compatibility_date": "2026-08-22",
   "compatibility_flags": ["nodejs_compat"],
   "routes": [{ "pattern": "super-seed.example.com", "custom_domain": true }],
   "observability": { "enabled": true },
