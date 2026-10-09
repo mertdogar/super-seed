@@ -113,6 +113,24 @@ export const operatorRoutes = [
         .execute();
     },
   }),
+  // @feature api-keys
+  defineRoute({
+    internal: true,
+    method: "POST",
+    path: "/api/v1/operator/organizations/{id}/reset-api-key-usage",
+    auth: "operator",
+    params,
+    response: z.object({ keys: z.number().int() }),
+    async handler({ params, db }) {
+      const result = await db
+        .updateTable("apikey")
+        .set({ requestCount: 0, lastRequest: null })
+        .where("referenceId", "=", params.id)
+        .executeTakeFirst();
+      return { keys: Number(result.numUpdatedRows) };
+    },
+  }),
+  // @end api-keys
   // @feature billing
   defineRoute({
     internal: true,

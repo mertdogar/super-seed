@@ -122,7 +122,11 @@ export function createAuth(env: Env, requestUrl: string) {
       admin(),
       // @end operator
       // @feature api-keys
-      apiKey({ references: "organization", defaultPrefix: "ss_" }),
+      apiKey({
+        references: "organization",
+        defaultPrefix: "ss_",
+        rateLimit: { maxRequests: 1000, timeWindow: 1000 * 60 * 60 },
+      }),
       // @end api-keys
       // @feature billing
       stripePlugin(env, db),

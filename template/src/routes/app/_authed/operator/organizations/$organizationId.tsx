@@ -36,6 +36,9 @@ import {
 import { planNamed, plans } from "@/features/billing/plans";
 // @end billing
 import { useImpersonate } from "@/features/operator/impersonate";
+// @feature api-keys
+import { KeyUsageCard } from "@/features/operator/key-usage";
+// @end api-keys
 import {
   membersQuery,
   type OperatorOrganization,
@@ -92,6 +95,9 @@ function OrganizationPage() {
         {/* @feature billing */}
         <PlanCard organization={organization} />
         {/* @end billing */}
+        {/* @feature api-keys */}
+        <KeyUsageCard organizationId={organization.id} />
+        {/* @end api-keys */}
         <Members organization={organization} />
       </div>
     </>

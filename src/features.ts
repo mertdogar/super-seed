@@ -36,6 +36,7 @@ export const features = {
     hint: "organization keys for your customers' backends",
     paths: [
       "src/routes/app/_authed/_org/keys.tsx",
+      "src/features/operator/key-usage.tsx",
       "migrations/0003_api_keys.sql",
       "test/worker/api-keys.test.ts",
     ],

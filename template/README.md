@@ -113,6 +113,14 @@ Owners and admins create organization keys at `/app/keys`. A key calls any `tena
 curl https://super-seed.example.com/api/v1/... -H "Authorization: Bearer ss_..."
 ```
 
+Each key allows 1,000 requests an hour, set by `rateLimit` in `src/lib/auth.ts`.
+
+<!-- @feature operator -->
+
+Operators can reset an organization's key usage from its page in the console.
+
+<!-- @end operator -->
+
 <!-- @end api-keys -->
 <!-- @feature api-reference -->
 

@@ -112,3 +112,45 @@ describe("plan grants", () => {
   });
 });
 // @end billing
+
+// @feature api-keys
+describe("api key usage reset", () => {
+  it("clears the request window on every key of the organization", async () => {
+    const operator = await owner("reset-operator@example.com");
+    await env.DB.prepare('UPDATE "user" SET "role" = \'admin\' WHERE "id" = ?')
+      .bind(operator.userId)
+      .run();
+    const org = await owner("reset-owner@example.com");
+    const created = await json<{ id: string }>(
+      call("/api/auth/api-key/create", {
+        method: "POST",
+        cookie: org.cookie,
+        json: { name: "agent", organizationId: org.organizationId },
+      }),
+    );
+    const row = () =>
+      env.DB.prepare(
+        'SELECT "rateLimitMax", "rateLimitTimeWindow", "requestCount", "lastRequest" FROM "apikey" WHERE "id" = ?',
+      )
+        .bind(created.id)
+        .first<{
+          rateLimitMax: number;
+          rateLimitTimeWindow: number;
+          requestCount: number;
+          lastRequest: string | null;
+        }>();
+    expect(await row()).toMatchObject({ rateLimitMax: 1000, rateLimitTimeWindow: 3_600_000 });
+
+    await env.DB.prepare('UPDATE "apikey" SET "requestCount" = 7, "lastRequest" = ? WHERE "id" = ?')
+      .bind(new Date().toISOString(), created.id)
+      .run();
+
+    const path = `/api/v1/operator/organizations/${org.organizationId}/reset-api-key-usage`;
+    expect((await call(path, { method: "POST", cookie: org.cookie })).status).toBe(403);
+    expect(await json(call(path, { method: "POST", cookie: operator.cookie }))).toEqual({
+      keys: 1,
+    });
+    expect(await row()).toMatchObject({ requestCount: 0, lastRequest: null });
+  });
+});
+// @end api-keys
