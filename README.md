@@ -28,7 +28,7 @@ Optional features, all on by default:
 | Projects demo    | `projects`      | An example tenant resource with routes, pages and tests     |
 | Billing          | `billing`       | Stripe subscriptions per organization, pricing, plan limits |
 | API keys         | `api-keys`      | Organization keys for calling the API from other backends   |
-| Operator console | `operator`      | Platform admins, the organization list and impersonation    |
+| Operator console | `operator`      | Platform admins: organization and user pages, impersonation |
 | API reference    | `api-reference` | Scalar docs for the OpenAPI spec at `/docs/api`             |
 
 ## Options

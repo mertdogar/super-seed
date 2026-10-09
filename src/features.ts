@@ -41,10 +41,11 @@ export const features = {
   },
   operator: {
     label: "Operator console",
-    hint: "platform admins, the organization list and impersonation",
+    hint: "platform admins: organizations, users and impersonation",
     paths: [
       "src/features/operator",
       "src/routes/app/_authed/operator.tsx",
+      "src/routes/app/_authed/operator",
       "migrations/0002_operator.sql",
       "test/worker/operator.test.ts",
       "scripts/operator.ts",

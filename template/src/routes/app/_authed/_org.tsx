@@ -6,7 +6,6 @@ import {
   Outlet,
   redirect,
   useLocation,
-  useMatches,
   useNavigate,
 } from "@tanstack/react-router";
 import {
@@ -15,7 +14,6 @@ import {
   // @end api-reference
   Check,
   ChevronsUpDown,
-  Copy,
   // @feature billing
   CreditCard,
   // @end billing
@@ -35,20 +33,19 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
-import { toast } from "sonner";
 
 import { BrandMark } from "@/components/brand";
 import {
-  AppBreadcrumbs,
-  AppHeader,
   AppNav,
   getInitials,
   type NavItem,
   type NavSection,
 } from "@/components/dashboardblocks/app-shell";
-import { type LinkComponent, LinkProvider } from "@/components/dashboardblocks/link";
+import { ShellHeader } from "@/components/shell-header";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+// @feature operator
 import { Button } from "@/components/ui/button";
+// @end operator
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -58,7 +55,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
   SidebarContent,
@@ -70,10 +66,8 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarRail,
-  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { authClient } from "@/lib/auth-client";
 import { activeMemberQuery, isAdmin, organizationsQuery, resetSession } from "@/lib/session";
 import { site } from "@/site";
@@ -115,20 +109,9 @@ const toNav = ({ title, icon: Icon, to }: Page): NavItem => ({
   icon: <Icon />,
 });
 
-const RouterLink: LinkComponent = ({ href, ...props }) =>
-  href.startsWith("/app") ? (
-    <Link to={href as LinkOptions["to"]} {...props} />
-  ) : (
-    <a href={href} {...props} />
-  );
-
 function OrgLayout() {
   const { role, organizationId, session } = Route.useRouteContext();
   const { pathname } = useLocation();
-  // A detail route's loader returns its row, so the last crumb reads the name instead of the id
-  const leaf = useMatches().at(-1)?.loaderData as { id?: unknown; name?: unknown } | undefined;
-  const leafName = typeof leaf?.name === "string" ? leaf.name : undefined;
-  const leafId = typeof leaf?.id === "string" && pathname.endsWith(leaf.id) ? leaf.id : undefined;
   const { data: organizations = [] } = useQuery(organizationsQuery());
   const switchTo = useSwitch();
 
@@ -163,73 +146,39 @@ function OrgLayout() {
   ];
 
   return (
-    <LinkProvider component={RouterLink}>
-      <SidebarProvider>
-        <Sidebar collapsible="icon">
-          <SidebarHeader>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton size="lg" asChild>
-                  <Link to="/app" className="font-semibold tracking-tight">
-                    <BrandMark className="size-8 rounded-lg" />
-                    <span className="truncate">{site.name}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarHeader>
-          <SidebarContent>
-            <AppNav pathname={pathname} sections={sections} />
-          </SidebarContent>
-          <SidebarFooter>
-            <AccountMenu {...menu} />
-          </SidebarFooter>
-          <SidebarRail />
-        </Sidebar>
-        <SidebarInset>
-          {/* @feature operator */}
-          <ImpersonationBanner />
-          {/* @end operator */}
-          <AppHeader>
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
-            <AppBreadcrumbs items={crumbs(pathname, sections, leafName)} />
-            {leafId && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon-xs"
-                    className="text-muted-foreground"
-                    aria-label="Copy ID"
-                    onClick={() =>
-                      navigator.clipboard.writeText(leafId).then(() => toast("ID copied"))
-                    }
-                  >
-                    <Copy />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Click to copy</TooltipContent>
-              </Tooltip>
-            )}
-          </AppHeader>
-          <div className="flex flex-1 flex-col gap-8 p-4 md:p-6">
-            <Outlet />
-          </div>
-        </SidebarInset>
-      </SidebarProvider>
-    </LinkProvider>
+    <SidebarProvider>
+      <Sidebar collapsible="icon">
+        <SidebarHeader>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton size="lg" asChild>
+                <Link to="/app" className="font-semibold tracking-tight">
+                  <BrandMark className="size-8 rounded-lg" />
+                  <span className="truncate">{site.name}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarHeader>
+        <SidebarContent>
+          <AppNav pathname={pathname} sections={sections} />
+        </SidebarContent>
+        <SidebarFooter>
+          <AccountMenu {...menu} />
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
+      <SidebarInset>
+        {/* @feature operator */}
+        <ImpersonationBanner />
+        {/* @end operator */}
+        <ShellHeader base="/app" sections={sections} />
+        <div className="flex flex-1 flex-col gap-8 p-4 md:p-6">
+          <Outlet />
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
-}
-
-function crumbs(pathname: string, sections: NavSection[], leafName?: string) {
-  const [, , first, ...rest] = pathname.split("/");
-  const href = first ? `/app/${first}` : "/app";
-  const page = sections.flatMap((section) => section.items).find((item) => item.href === href);
-  return [
-    { label: page?.title ?? first ?? "Dashboard", href: rest.length ? href : undefined },
-    ...rest.map((segment, i) => ({ label: (i === rest.length - 1 && leafName) || segment })),
-  ];
 }
 
 type AccountMenuProps = {

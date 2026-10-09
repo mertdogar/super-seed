@@ -1,147 +1,94 @@
-import { queryOptions, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, Outlet, redirect, useLocation } from "@tanstack/react-router";
+import { ArrowLeft, Building2, LayoutDashboard, ShieldCheck, Users } from "lucide-react";
 
-import { apiQuery } from "@/api/client";
-import { Brand } from "@/components/brand";
-import { PageHeader } from "@/components/page-header";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { AppNav, type NavSection } from "@/components/dashboardblocks/app-shell";
+import { ShellHeader } from "@/components/shell-header";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { authClient, unwrap } from "@/lib/auth-client";
-import { resetSession } from "@/lib/session";
-import { useAction } from "@/lib/use-action";
-
-const organizationsQuery = apiQuery("GET /api/v1/operator/organizations");
-
-function usersQuery(search: string) {
-  return queryOptions({
-    queryKey: ["operator", "users", search],
-    queryFn: () =>
-      unwrap(
-        authClient.admin.listUsers({
-          query: {
-            limit: 50,
-            sortBy: "createdAt",
-            sortDirection: "desc",
-            ...(search ? { searchValue: search, searchField: "email" as const } : {}),
-          },
-        }),
-      ),
-  });
-}
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarInset,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarProvider,
+  SidebarRail,
+} from "@/components/ui/sidebar";
+import { organizationsQuery } from "@/features/operator/queries";
+import { site } from "@/site";
 
 export const Route = createFileRoute("/app/_authed/operator")({
   beforeLoad: ({ context }) => {
     if (context.session.user.role !== "admin") throw redirect({ to: "/app" });
   },
   loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(organizationsQuery),
-  component: Operator,
+  component: OperatorLayout,
 });
 
-function Operator() {
-  const { session } = Route.useRouteContext();
+function OperatorLayout() {
   const { data: organizations } = useSuspenseQuery(organizationsQuery);
-  const [search, setSearch] = useState("");
-  const users = useQuery(usersQuery(search));
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
-  const { pending, error, run } = useAction();
+  const { pathname } = useLocation();
+  const sections: NavSection[] = [
+    {
+      label: "Platform",
+      items: [
+        { title: "Overview", href: "/app/operator", exact: true, icon: <LayoutDashboard /> },
+        {
+          title: "Organizations",
+          href: "/app/operator/organizations",
+          icon: <Building2 />,
+          badge: organizations.length || undefined,
+        },
+        { title: "Users", href: "/app/operator/users", icon: <Users /> },
+      ],
+    },
+  ];
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8 p-6 md:p-10">
-      <div className="flex items-center justify-between">
-        <Brand />
-        <Link to="/app" className="text-sm text-muted-foreground">
-          Back to the dashboard
-        </Link>
-      </div>
-      <PageHeader title="Operator" description="Every organization and user on the platform." />
-      {error && (
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-      <section className="space-y-3">
-        <h2 className="font-semibold">Organizations</h2>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Owner</TableHead>
-              <TableHead>Members</TableHead>
-              <TableHead>Created</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {organizations.map((organization) => (
-              <TableRow key={organization.id}>
-                <TableCell className="font-medium">{organization.name}</TableCell>
-                <TableCell>{organization.ownerEmail}</TableCell>
-                <TableCell>{organization.memberCount}</TableCell>
-                <TableCell>{new Date(organization.createdAt).toLocaleDateString()}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </section>
-      <section className="space-y-3">
-        <div className="flex items-center justify-between gap-4">
-          <h2 className="font-semibold">Users</h2>
-          <Input
-            placeholder="Search by email"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            className="max-w-64"
-          />
+    <SidebarProvider>
+      <Sidebar collapsible="icon">
+        <SidebarHeader>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton size="lg" asChild className="font-semibold tracking-tight">
+                <Link to="/app/operator">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-foreground text-background">
+                    <ShieldCheck className="size-4" />
+                  </span>
+                  <span className="grid leading-tight">
+                    <span>Operator</span>
+                    <span className="text-xs font-normal text-muted-foreground">{site.name}</span>
+                  </span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarHeader>
+        <SidebarContent>
+          <AppNav pathname={pathname} sections={sections} />
+        </SidebarContent>
+        <SidebarFooter>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Back to the app">
+                <Link to="/app">
+                  <ArrowLeft />
+                  <span>Back to the app</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarFooter>
+        <SidebarRail />
+      </Sidebar>
+      <SidebarInset>
+        <ShellHeader base="/app/operator" sections={sections} />
+        <div className="flex flex-1 flex-col gap-8 p-4 md:p-6">
+          <Outlet />
         </div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Joined</TableHead>
-              <TableHead className="w-0" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {users.data?.users.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="font-medium">
-                  {user.name} {user.role === "admin" && <Badge variant="secondary">operator</Badge>}
-                </TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    disabled={pending || user.id === session.user.id}
-                    onClick={() =>
-                      run(async () => {
-                        await unwrap(authClient.admin.impersonateUser({ userId: user.id }));
-                        resetSession(queryClient);
-                        await navigate({ to: "/app" });
-                      })
-                    }
-                  >
-                    Impersonate
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </section>
-    </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

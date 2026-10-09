@@ -27,8 +27,12 @@ import { Route as AppAuthedOrgBillingRouteImport } from './routes/app/_authed/_o
 import { Route as AppAuthedOrgKeysRouteImport } from './routes/app/_authed/_org/keys'
 import { Route as AppAuthedOrgMembersRouteImport } from './routes/app/_authed/_org/members'
 import { Route as AppAuthedOrgSettingsRouteImport } from './routes/app/_authed/_org/settings'
+import { Route as AppAuthedOperatorIndexRouteImport } from './routes/app/_authed/operator/index'
+import { Route as AppAuthedOperatorUsersRouteImport } from './routes/app/_authed/operator/users'
 import { Route as AppAuthedOrgProjectsIndexRouteImport } from './routes/app/_authed/_org/projects/index'
 import { Route as AppAuthedOrgProjectsProjectIdRouteImport } from './routes/app/_authed/_org/projects/$projectId'
+import { Route as AppAuthedOperatorOrganizationsIndexRouteImport } from './routes/app/_authed/operator/organizations/index'
+import { Route as AppAuthedOperatorOrganizationsOrganizationIdRouteImport } from './routes/app/_authed/operator/organizations/$organizationId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -119,6 +123,16 @@ const AppAuthedOrgSettingsRoute = AppAuthedOrgSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AppAuthedOrgRoute,
 } as any)
+const AppAuthedOperatorIndexRoute = AppAuthedOperatorIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppAuthedOperatorRoute,
+} as any)
+const AppAuthedOperatorUsersRoute = AppAuthedOperatorUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AppAuthedOperatorRoute,
+} as any)
 const AppAuthedOrgProjectsIndexRoute =
   AppAuthedOrgProjectsIndexRouteImport.update({
     id: '/projects/',
@@ -131,6 +145,18 @@ const AppAuthedOrgProjectsProjectIdRoute =
     path: '/projects/$projectId',
     getParentRoute: () => AppAuthedOrgRoute,
   } as any)
+const AppAuthedOperatorOrganizationsIndexRoute =
+  AppAuthedOperatorOrganizationsIndexRouteImport.update({
+    id: '/organizations/',
+    path: '/organizations/',
+    getParentRoute: () => AppAuthedOperatorRoute,
+  } as any)
+const AppAuthedOperatorOrganizationsOrganizationIdRoute =
+  AppAuthedOperatorOrganizationsOrganizationIdRouteImport.update({
+    id: '/organizations/$organizationId',
+    path: '/organizations/$organizationId',
+    getParentRoute: () => AppAuthedOperatorRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -142,15 +168,19 @@ export interface FileRoutesByFullPath {
   '/app/sign-in': typeof AppSignInRoute
   '/app/sign-up': typeof AppSignUpRoute
   '/app/accept-invitation': typeof AppAuthedAcceptInvitationRoute
-  '/app/operator': typeof AppAuthedOperatorRoute
+  '/app/operator': typeof AppAuthedOperatorRouteWithChildren
   '/app/welcome': typeof AppAuthedWelcomeRoute
   '/app/billing': typeof AppAuthedOrgBillingRoute
   '/app/keys': typeof AppAuthedOrgKeysRoute
   '/app/members': typeof AppAuthedOrgMembersRoute
   '/app/settings': typeof AppAuthedOrgSettingsRoute
+  '/app/operator/users': typeof AppAuthedOperatorUsersRoute
   '/app/': typeof AppAuthedOrgIndexRoute
+  '/app/operator/': typeof AppAuthedOperatorIndexRoute
   '/app/projects/$projectId': typeof AppAuthedOrgProjectsProjectIdRoute
+  '/app/operator/organizations/$organizationId': typeof AppAuthedOperatorOrganizationsOrganizationIdRoute
   '/app/projects/': typeof AppAuthedOrgProjectsIndexRoute
+  '/app/operator/organizations/': typeof AppAuthedOperatorOrganizationsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -162,14 +192,17 @@ export interface FileRoutesByTo {
   '/app/sign-in': typeof AppSignInRoute
   '/app/sign-up': typeof AppSignUpRoute
   '/app/accept-invitation': typeof AppAuthedAcceptInvitationRoute
-  '/app/operator': typeof AppAuthedOperatorRoute
   '/app/welcome': typeof AppAuthedWelcomeRoute
   '/app/billing': typeof AppAuthedOrgBillingRoute
   '/app/keys': typeof AppAuthedOrgKeysRoute
   '/app/members': typeof AppAuthedOrgMembersRoute
   '/app/settings': typeof AppAuthedOrgSettingsRoute
+  '/app/operator/users': typeof AppAuthedOperatorUsersRoute
+  '/app/operator': typeof AppAuthedOperatorIndexRoute
   '/app/projects/$projectId': typeof AppAuthedOrgProjectsProjectIdRoute
+  '/app/operator/organizations/$organizationId': typeof AppAuthedOperatorOrganizationsOrganizationIdRoute
   '/app/projects': typeof AppAuthedOrgProjectsIndexRoute
+  '/app/operator/organizations': typeof AppAuthedOperatorOrganizationsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -184,15 +217,19 @@ export interface FileRoutesById {
   '/app/sign-up': typeof AppSignUpRoute
   '/app/_authed/_org': typeof AppAuthedOrgRouteWithChildren
   '/app/_authed/accept-invitation': typeof AppAuthedAcceptInvitationRoute
-  '/app/_authed/operator': typeof AppAuthedOperatorRoute
+  '/app/_authed/operator': typeof AppAuthedOperatorRouteWithChildren
   '/app/_authed/welcome': typeof AppAuthedWelcomeRoute
   '/app/_authed/_org/billing': typeof AppAuthedOrgBillingRoute
   '/app/_authed/_org/keys': typeof AppAuthedOrgKeysRoute
   '/app/_authed/_org/members': typeof AppAuthedOrgMembersRoute
   '/app/_authed/_org/settings': typeof AppAuthedOrgSettingsRoute
+  '/app/_authed/operator/users': typeof AppAuthedOperatorUsersRoute
   '/app/_authed/_org/': typeof AppAuthedOrgIndexRoute
+  '/app/_authed/operator/': typeof AppAuthedOperatorIndexRoute
   '/app/_authed/_org/projects/$projectId': typeof AppAuthedOrgProjectsProjectIdRoute
+  '/app/_authed/operator/organizations/$organizationId': typeof AppAuthedOperatorOrganizationsOrganizationIdRoute
   '/app/_authed/_org/projects/': typeof AppAuthedOrgProjectsIndexRoute
+  '/app/_authed/operator/organizations/': typeof AppAuthedOperatorOrganizationsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -212,9 +249,13 @@ export interface FileRouteTypes {
     | '/app/keys'
     | '/app/members'
     | '/app/settings'
+    | '/app/operator/users'
     | '/app/'
+    | '/app/operator/'
     | '/app/projects/$projectId'
+    | '/app/operator/organizations/$organizationId'
     | '/app/projects/'
+    | '/app/operator/organizations/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -226,14 +267,17 @@ export interface FileRouteTypes {
     | '/app/sign-in'
     | '/app/sign-up'
     | '/app/accept-invitation'
-    | '/app/operator'
     | '/app/welcome'
     | '/app/billing'
     | '/app/keys'
     | '/app/members'
     | '/app/settings'
+    | '/app/operator/users'
+    | '/app/operator'
     | '/app/projects/$projectId'
+    | '/app/operator/organizations/$organizationId'
     | '/app/projects'
+    | '/app/operator/organizations'
   id:
     | '__root__'
     | '/'
@@ -253,9 +297,13 @@ export interface FileRouteTypes {
     | '/app/_authed/_org/keys'
     | '/app/_authed/_org/members'
     | '/app/_authed/_org/settings'
+    | '/app/_authed/operator/users'
     | '/app/_authed/_org/'
+    | '/app/_authed/operator/'
     | '/app/_authed/_org/projects/$projectId'
+    | '/app/_authed/operator/organizations/$organizationId'
     | '/app/_authed/_org/projects/'
+    | '/app/_authed/operator/organizations/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -393,6 +441,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAuthedOrgSettingsRouteImport
       parentRoute: typeof AppAuthedOrgRoute
     }
+    '/app/_authed/operator/': {
+      id: '/app/_authed/operator/'
+      path: '/'
+      fullPath: '/app/operator/'
+      preLoaderRoute: typeof AppAuthedOperatorIndexRouteImport
+      parentRoute: typeof AppAuthedOperatorRoute
+    }
+    '/app/_authed/operator/users': {
+      id: '/app/_authed/operator/users'
+      path: '/users'
+      fullPath: '/app/operator/users'
+      preLoaderRoute: typeof AppAuthedOperatorUsersRouteImport
+      parentRoute: typeof AppAuthedOperatorRoute
+    }
     '/app/_authed/_org/projects/': {
       id: '/app/_authed/_org/projects/'
       path: '/projects'
@@ -406,6 +468,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/projects/$projectId'
       preLoaderRoute: typeof AppAuthedOrgProjectsProjectIdRouteImport
       parentRoute: typeof AppAuthedOrgRoute
+    }
+    '/app/_authed/operator/organizations/': {
+      id: '/app/_authed/operator/organizations/'
+      path: '/organizations'
+      fullPath: '/app/operator/organizations/'
+      preLoaderRoute: typeof AppAuthedOperatorOrganizationsIndexRouteImport
+      parentRoute: typeof AppAuthedOperatorRoute
+    }
+    '/app/_authed/operator/organizations/$organizationId': {
+      id: '/app/_authed/operator/organizations/$organizationId'
+      path: '/organizations/$organizationId'
+      fullPath: '/app/operator/organizations/$organizationId'
+      preLoaderRoute: typeof AppAuthedOperatorOrganizationsOrganizationIdRouteImport
+      parentRoute: typeof AppAuthedOperatorRoute
     }
   }
 }
@@ -434,17 +510,36 @@ const AppAuthedOrgRouteWithChildren = AppAuthedOrgRoute._addFileChildren(
   AppAuthedOrgRouteChildren,
 )
 
+interface AppAuthedOperatorRouteChildren {
+  AppAuthedOperatorUsersRoute: typeof AppAuthedOperatorUsersRoute
+  AppAuthedOperatorIndexRoute: typeof AppAuthedOperatorIndexRoute
+  AppAuthedOperatorOrganizationsOrganizationIdRoute: typeof AppAuthedOperatorOrganizationsOrganizationIdRoute
+  AppAuthedOperatorOrganizationsIndexRoute: typeof AppAuthedOperatorOrganizationsIndexRoute
+}
+
+const AppAuthedOperatorRouteChildren: AppAuthedOperatorRouteChildren = {
+  AppAuthedOperatorUsersRoute: AppAuthedOperatorUsersRoute,
+  AppAuthedOperatorIndexRoute: AppAuthedOperatorIndexRoute,
+  AppAuthedOperatorOrganizationsOrganizationIdRoute:
+    AppAuthedOperatorOrganizationsOrganizationIdRoute,
+  AppAuthedOperatorOrganizationsIndexRoute:
+    AppAuthedOperatorOrganizationsIndexRoute,
+}
+
+const AppAuthedOperatorRouteWithChildren =
+  AppAuthedOperatorRoute._addFileChildren(AppAuthedOperatorRouteChildren)
+
 interface AppAuthedRouteChildren {
   AppAuthedOrgRoute: typeof AppAuthedOrgRouteWithChildren
   AppAuthedAcceptInvitationRoute: typeof AppAuthedAcceptInvitationRoute
-  AppAuthedOperatorRoute: typeof AppAuthedOperatorRoute
+  AppAuthedOperatorRoute: typeof AppAuthedOperatorRouteWithChildren
   AppAuthedWelcomeRoute: typeof AppAuthedWelcomeRoute
 }
 
 const AppAuthedRouteChildren: AppAuthedRouteChildren = {
   AppAuthedOrgRoute: AppAuthedOrgRouteWithChildren,
   AppAuthedAcceptInvitationRoute: AppAuthedAcceptInvitationRoute,
-  AppAuthedOperatorRoute: AppAuthedOperatorRoute,
+  AppAuthedOperatorRoute: AppAuthedOperatorRouteWithChildren,
   AppAuthedWelcomeRoute: AppAuthedWelcomeRoute,
 }
 
