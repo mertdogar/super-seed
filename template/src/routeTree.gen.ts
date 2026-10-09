@@ -28,6 +28,7 @@ import { Route as AppAuthedOrgKeysRouteImport } from './routes/app/_authed/_org/
 import { Route as AppAuthedOrgMembersRouteImport } from './routes/app/_authed/_org/members'
 import { Route as AppAuthedOrgSettingsRouteImport } from './routes/app/_authed/_org/settings'
 import { Route as AppAuthedOperatorIndexRouteImport } from './routes/app/_authed/operator/index'
+import { Route as AppAuthedOperatorGrantsRouteImport } from './routes/app/_authed/operator/grants'
 import { Route as AppAuthedOperatorUsersRouteImport } from './routes/app/_authed/operator/users'
 import { Route as AppAuthedOrgProjectsIndexRouteImport } from './routes/app/_authed/_org/projects/index'
 import { Route as AppAuthedOrgProjectsProjectIdRouteImport } from './routes/app/_authed/_org/projects/$projectId'
@@ -128,6 +129,11 @@ const AppAuthedOperatorIndexRoute = AppAuthedOperatorIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppAuthedOperatorRoute,
 } as any)
+const AppAuthedOperatorGrantsRoute = AppAuthedOperatorGrantsRouteImport.update({
+  id: '/grants',
+  path: '/grants',
+  getParentRoute: () => AppAuthedOperatorRoute,
+} as any)
 const AppAuthedOperatorUsersRoute = AppAuthedOperatorUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -174,6 +180,7 @@ export interface FileRoutesByFullPath {
   '/app/keys': typeof AppAuthedOrgKeysRoute
   '/app/members': typeof AppAuthedOrgMembersRoute
   '/app/settings': typeof AppAuthedOrgSettingsRoute
+  '/app/operator/grants': typeof AppAuthedOperatorGrantsRoute
   '/app/operator/users': typeof AppAuthedOperatorUsersRoute
   '/app/': typeof AppAuthedOrgIndexRoute
   '/app/operator/': typeof AppAuthedOperatorIndexRoute
@@ -197,6 +204,7 @@ export interface FileRoutesByTo {
   '/app/keys': typeof AppAuthedOrgKeysRoute
   '/app/members': typeof AppAuthedOrgMembersRoute
   '/app/settings': typeof AppAuthedOrgSettingsRoute
+  '/app/operator/grants': typeof AppAuthedOperatorGrantsRoute
   '/app/operator/users': typeof AppAuthedOperatorUsersRoute
   '/app/operator': typeof AppAuthedOperatorIndexRoute
   '/app/projects/$projectId': typeof AppAuthedOrgProjectsProjectIdRoute
@@ -223,6 +231,7 @@ export interface FileRoutesById {
   '/app/_authed/_org/keys': typeof AppAuthedOrgKeysRoute
   '/app/_authed/_org/members': typeof AppAuthedOrgMembersRoute
   '/app/_authed/_org/settings': typeof AppAuthedOrgSettingsRoute
+  '/app/_authed/operator/grants': typeof AppAuthedOperatorGrantsRoute
   '/app/_authed/operator/users': typeof AppAuthedOperatorUsersRoute
   '/app/_authed/_org/': typeof AppAuthedOrgIndexRoute
   '/app/_authed/operator/': typeof AppAuthedOperatorIndexRoute
@@ -249,6 +258,7 @@ export interface FileRouteTypes {
     | '/app/keys'
     | '/app/members'
     | '/app/settings'
+    | '/app/operator/grants'
     | '/app/operator/users'
     | '/app/'
     | '/app/operator/'
@@ -272,6 +282,7 @@ export interface FileRouteTypes {
     | '/app/keys'
     | '/app/members'
     | '/app/settings'
+    | '/app/operator/grants'
     | '/app/operator/users'
     | '/app/operator'
     | '/app/projects/$projectId'
@@ -297,6 +308,7 @@ export interface FileRouteTypes {
     | '/app/_authed/_org/keys'
     | '/app/_authed/_org/members'
     | '/app/_authed/_org/settings'
+    | '/app/_authed/operator/grants'
     | '/app/_authed/operator/users'
     | '/app/_authed/_org/'
     | '/app/_authed/operator/'
@@ -448,6 +460,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAuthedOperatorIndexRouteImport
       parentRoute: typeof AppAuthedOperatorRoute
     }
+    '/app/_authed/operator/grants': {
+      id: '/app/_authed/operator/grants'
+      path: '/grants'
+      fullPath: '/app/operator/grants'
+      preLoaderRoute: typeof AppAuthedOperatorGrantsRouteImport
+      parentRoute: typeof AppAuthedOperatorRoute
+    }
     '/app/_authed/operator/users': {
       id: '/app/_authed/operator/users'
       path: '/users'
@@ -511,6 +530,7 @@ const AppAuthedOrgRouteWithChildren = AppAuthedOrgRoute._addFileChildren(
 )
 
 interface AppAuthedOperatorRouteChildren {
+  AppAuthedOperatorGrantsRoute: typeof AppAuthedOperatorGrantsRoute
   AppAuthedOperatorUsersRoute: typeof AppAuthedOperatorUsersRoute
   AppAuthedOperatorIndexRoute: typeof AppAuthedOperatorIndexRoute
   AppAuthedOperatorOrganizationsOrganizationIdRoute: typeof AppAuthedOperatorOrganizationsOrganizationIdRoute
@@ -518,6 +538,7 @@ interface AppAuthedOperatorRouteChildren {
 }
 
 const AppAuthedOperatorRouteChildren: AppAuthedOperatorRouteChildren = {
+  AppAuthedOperatorGrantsRoute: AppAuthedOperatorGrantsRoute,
   AppAuthedOperatorUsersRoute: AppAuthedOperatorUsersRoute,
   AppAuthedOperatorIndexRoute: AppAuthedOperatorIndexRoute,
   AppAuthedOperatorOrganizationsOrganizationIdRoute:

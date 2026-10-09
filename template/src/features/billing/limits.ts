@@ -6,6 +6,10 @@ import { type Limits, planNamed } from "./plans";
 export const activeStatuses = ["active", "trialing"];
 
 export async function currentPlan(db: Db, organizationId: string) {
+  // @feature operator
+  const grant = await planGrant(db, organizationId);
+  if (grant) return planNamed(grant.plan);
+  // @end operator
   const subscription = await db
     .selectFrom("subscription")
     .select("plan")
@@ -14,6 +18,17 @@ export async function currentPlan(db: Db, organizationId: string) {
     .executeTakeFirst();
   return planNamed(subscription?.plan);
 }
+
+// @feature operator
+/** The plan an operator gave the organization for free, which wins over its subscription. */
+export function planGrant(db: Db, organizationId: string) {
+  return db
+    .selectFrom("planGrant")
+    .select("plan")
+    .where("organizationId", "=", organizationId)
+    .executeTakeFirst();
+}
+// @end operator
 
 export async function assertWithinPlan(
   db: Db,

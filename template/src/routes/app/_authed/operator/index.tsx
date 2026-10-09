@@ -28,6 +28,13 @@ function Overview() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Stat label="Organizations" value={organizations.length} />
         <Stat label="Users" value={users.data?.total ?? "…"} />
+        {/* @feature billing */}
+        <Stat
+          label="Granted plans"
+          value={organizations.filter((o) => o.grantedPlan).length}
+          hint="Plans an operator set by hand"
+        />
+        {/* @end billing */}
       </div>
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>

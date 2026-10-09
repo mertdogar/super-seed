@@ -1,6 +1,15 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, Outlet, redirect, useLocation } from "@tanstack/react-router";
-import { ArrowLeft, Building2, LayoutDashboard, ShieldCheck, Users } from "lucide-react";
+import {
+  ArrowLeft,
+  Building2,
+  LayoutDashboard,
+  ShieldCheck,
+  // @feature billing
+  Ticket,
+  // @end billing
+  Users,
+} from "lucide-react";
 
 import { AppNav, type NavSection } from "@/components/dashboardblocks/app-shell";
 import { ShellHeader } from "@/components/shell-header";
@@ -42,6 +51,14 @@ function OperatorLayout() {
           badge: organizations.length || undefined,
         },
         { title: "Users", href: "/app/operator/users", icon: <Users /> },
+        // @feature billing
+        {
+          title: "Plan grants",
+          href: "/app/operator/grants",
+          icon: <Ticket />,
+          badge: organizations.filter((o) => o.grantedPlan).length || undefined,
+        },
+        // @end billing
       ],
     },
   ];

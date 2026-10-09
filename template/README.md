@@ -25,6 +25,13 @@ pnpm operator:add you@example.com            # local database
 pnpm operator:add you@example.com --remote   # production
 ```
 
+<!-- @feature billing -->
+
+Operators can give an organization a plan for free from its page in the console. The grant wins
+over its Stripe subscription until they remove it.
+
+<!-- @end billing -->
+
 <!-- @end operator -->
 
 ## Commands

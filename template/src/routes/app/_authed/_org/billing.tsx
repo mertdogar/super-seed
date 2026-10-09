@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { apiQuery } from "@/api/client";
+import { type api, apiQuery } from "@/api/client";
 import { PageHeader } from "@/components/page-header";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -44,11 +44,7 @@ function Billing() {
     <>
       <PageHeader
         title="Billing"
-        description={
-          billing.subscription?.cancelAtPeriodEnd && billing.subscription.periodEnd
-            ? `Your subscription ends on ${new Date(billing.subscription.periodEnd).toLocaleDateString()}.`
-            : `You're on the ${billing.label} plan.`
-        }
+        description={summary(billing)}
         actions={
           billing.subscription &&
           canManage && (
@@ -122,4 +118,14 @@ function Billing() {
       </div>
     </>
   );
+}
+
+function summary(billing: Awaited<ReturnType<typeof api<"GET /api/v1/billing">>>) {
+  const { subscription } = billing;
+  if (subscription?.cancelAtPeriodEnd && subscription.periodEnd)
+    return `Your subscription ends on ${new Date(subscription.periodEnd).toLocaleDateString()}.`;
+  // @feature operator
+  if (billing.complimentary) return `You're on the ${billing.label} plan, on the house.`;
+  // @end operator
+  return `You're on the ${billing.label} plan.`;
 }

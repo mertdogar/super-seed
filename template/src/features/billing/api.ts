@@ -2,13 +2,23 @@ import * as z from "zod";
 
 import { defineRoute } from "@/api/route";
 
-import { activeStatuses } from "./limits";
-import { planNamed } from "./plans";
+import {
+  activeStatuses,
+  currentPlan,
+  // @feature operator
+  planGrant,
+  // @end operator
+} from "./limits";
 
 const Billing = z
   .object({
     plan: z.string(),
     label: z.string(),
+    // @feature operator
+    complimentary: z.boolean().meta({
+      description: "Whether an operator granted the plan for free, instead of a subscription.",
+    }),
+    // @end operator
     limits: z.record(z.string(), z.number()),
     subscription: z
       .object({
@@ -29,16 +39,21 @@ export const billingRoutes = [
     auth: "tenant",
     response: Billing,
     async handler({ caller, db }) {
-      const subscription = await db
-        .selectFrom("subscription")
-        .select(["plan", "status", "periodEnd", "cancelAtPeriodEnd"])
-        .where("referenceId", "=", caller.organizationId)
-        .where("status", "in", activeStatuses)
-        .executeTakeFirst();
-      const plan = planNamed(subscription?.plan);
+      const [plan, subscription] = await Promise.all([
+        currentPlan(db, caller.organizationId),
+        db
+          .selectFrom("subscription")
+          .select(["status", "periodEnd", "cancelAtPeriodEnd"])
+          .where("referenceId", "=", caller.organizationId)
+          .where("status", "in", activeStatuses)
+          .executeTakeFirst(),
+      ]);
       return {
         plan: plan.name,
         label: plan.label,
+        // @feature operator
+        complimentary: (await planGrant(db, caller.organizationId)) !== undefined,
+        // @end operator
         limits: plan.limits,
         subscription: subscription
           ? {

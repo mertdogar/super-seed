@@ -79,6 +79,14 @@ export interface Organization {
   stripeCustomerId: string | null;
 }
 
+export interface PlanGrant {
+  createdAt: string;
+  grantedBy: string;
+  note: string | null;
+  organizationId: string;
+  plan: string;
+}
+
 export interface Project {
   createdAt: string;
   createdBy: string | null;
@@ -152,6 +160,7 @@ export interface DB {
   invitation: Invitation;
   member: Member;
   organization: Organization;
+  planGrant: PlanGrant;
   project: Project;
   session: Session;
   subscription: Subscription;

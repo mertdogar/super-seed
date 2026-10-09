@@ -3,6 +3,9 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { PageHeader } from "@/components/page-header";
+// @feature billing
+import { Badge } from "@/components/ui/badge";
+// @end billing
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -12,7 +15,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { organizationsQuery, shortDate } from "@/features/operator/queries";
+import {
+  organizationsQuery,
+  // @feature billing
+  planOf,
+  // @end billing
+  shortDate,
+} from "@/features/operator/queries";
 
 export const Route = createFileRoute("/app/_authed/operator/organizations/")({
   component: Organizations,
@@ -46,6 +55,9 @@ function Organizations() {
             <TableHead>Name</TableHead>
             <TableHead>Owner</TableHead>
             <TableHead className="text-right">Members</TableHead>
+            {/* @feature billing */}
+            <TableHead>Plan</TableHead>
+            {/* @end billing */}
             <TableHead>Created</TableHead>
           </TableRow>
         </TableHeader>
@@ -64,6 +76,11 @@ function Organizations() {
               <TableCell className="font-medium">{o.name}</TableCell>
               <TableCell className="text-muted-foreground">{o.ownerEmail ?? "—"}</TableCell>
               <TableCell className="text-right tabular-nums">{o.memberCount}</TableCell>
+              {/* @feature billing */}
+              <TableCell>
+                <Badge variant={o.grantedPlan ? "default" : "outline"}>{planOf(o).label}</Badge>
+              </TableCell>
+              {/* @end billing */}
               <TableCell className="text-muted-foreground">{shortDate(o.createdAt)}</TableCell>
             </TableRow>
           ))}
