@@ -123,6 +123,9 @@ helpers and UI sections. Keeping it together makes a feature easy to find and to
   `marketingPages` in `vite.config.ts`, or it is neither prerendered nor in the sitemap
 - `/app/*` has `ssr: false` and runs only in the browser. `_authed` requires a session; `_org`
   requires an active organization
+- `_org.tsx` is the app shell on the shadcn sidebar. Add a page to its `main` or `organization`
+  nav. Breadcrumbs come from the URL; a detail route's loader returns its row, so the last crumb
+  shows its `name` and the header offers to copy its `id`
 - Server state lives in TanStack Query. Session queries are in `src/lib/session.ts`; call
   `resetSession(queryClient)` when the signed-in user or active organization changes
 - UI components are shadcn/ui on Tailwind 4 in `src/components/ui`. Add one with
