@@ -18,18 +18,19 @@ Every app has:
   client and published as OpenAPI
 - Email and password sign-up with verification and password reset
 - Organizations with owner, admin and member roles, and email invitations
-- A dashboard at `/app` and a prerendered landing page with privacy and terms pages
+- A dashboard at `/app` on a collapsible shadcn sidebar, and a prerendered landing page with
+  privacy and terms pages
 - `pnpm check`: types, lint, format, build and tests against a real Worker and D1
 
 Optional features, all on by default:
 
-| Feature          | Name            | Adds                                                        |
-| ---------------- | --------------- | ----------------------------------------------------------- |
-| Projects demo    | `projects`      | An example tenant resource with routes, pages and tests     |
-| Billing          | `billing`       | Stripe subscriptions per organization, pricing, plan limits |
-| API keys         | `api-keys`      | Organization keys for calling the API from other backends   |
-| Operator console | `operator`      | Platform admins: organization and user pages, impersonation |
-| API reference    | `api-reference` | Scalar docs for the OpenAPI spec at `/docs/api`             |
+| Feature          | Name            | Adds                                                              |
+| ---------------- | --------------- | ----------------------------------------------------------------- |
+| Projects demo    | `projects`      | An example tenant resource with routes, pages and tests           |
+| Billing          | `billing`       | Stripe subscriptions per organization, pricing, plan limits       |
+| API keys         | `api-keys`      | Organization keys for calling the API from other backends         |
+| Operator console | `operator`      | Platform admins: organizations, users, impersonation, plan grants |
+| API reference    | `api-reference` | Scalar docs for the OpenAPI spec at `/docs/api`                   |
 
 ## Options
 
