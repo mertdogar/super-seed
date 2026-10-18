@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import {
   cpSync,
   existsSync,
+  mkdirSync,
   readdirSync,
   readFileSync,
   renameSync,
@@ -24,6 +25,8 @@ const skipped = new Set([
   ".dev.vars",
   ".DS_Store",
 ]);
+
+const workspaceRootFiles = [".github", ".gitignore", "pnpm-lock.yaml", "pnpm-workspace.yaml"];
 
 const marker = /^\s*(?:\/\/|#|\{\/\*|<!--)\s*@(feature|end) ([a-z0-9-]+)\s*(?:\*\/\}|-->)?\s*$/;
 
@@ -94,15 +97,13 @@ function removeEmptyDirs(dir: string) {
   if (readdirSync(dir).length === 0) rmdirSync(dir);
 }
 
-function editPackageJson(target: string, removed: FeatureName[], names: Names) {
+function editPackageJson(target: string, removed: FeatureName[]) {
   const file = path.join(target, "package.json");
   const pkg = JSON.parse(readFileSync(file, "utf8")) as {
-    name: string;
     scripts: Record<string, string>;
     dependencies: Record<string, string>;
     devDependencies: Record<string, string>;
   };
-  pkg.name = names.slug;
   for (const name of removed) {
     const feature = features[name] as { dependencies?: string[]; scripts?: string[] };
     for (const dependency of feature.dependencies ?? []) {
@@ -123,8 +124,36 @@ function writeDevVars(target: string) {
   );
 }
 
+/** Moves the app into apps/app and makes the target a pnpm workspace root from `workspaceDir`. */
+function toWorkspace(target: string, workspaceDir: string) {
+  const app = path.join(target, "apps", "app");
+  const entries = readdirSync(target);
+  mkdirSync(app, { recursive: true });
+  for (const entry of entries) renameSync(path.join(target, entry), path.join(app, entry));
+  for (const entry of workspaceRootFiles)
+    renameSync(path.join(app, entry), path.join(target, entry));
+  cpSync(workspaceDir, target, { recursive: true });
+
+  const workspaceFile = path.join(target, "pnpm-workspace.yaml");
+  const settings = readFileSync(workspaceFile, "utf8");
+  writeFileSync(workspaceFile, `packages:\n  - apps/*\n  - packages/*\n${settings}`);
+
+  const appFile = path.join(app, "package.json");
+  const rootFile = path.join(target, "package.json");
+  const appPkg = JSON.parse(readFileSync(appFile, "utf8")) as Record<string, unknown>;
+  const rootPkg = JSON.parse(readFileSync(rootFile, "utf8")) as Record<string, unknown>;
+  appPkg.name = "@super-seed/app";
+  rootPkg.packageManager = appPkg.packageManager;
+  delete appPkg.packageManager;
+  writeFileSync(appFile, `${JSON.stringify(appPkg, null, 2)}\n`);
+  writeFileSync(rootFile, `${JSON.stringify(rootPkg, null, 2)}\n`);
+  return app;
+}
+
 export function scaffold(options: {
   templateDir: string;
+  /** When given, the app goes in apps/app of a pnpm workspace built from this folder. */
+  workspaceDir?: string;
   targetDir: string;
   features: FeatureName[];
   names: Names;
@@ -145,6 +174,7 @@ export function scaffold(options: {
     for (const relative of features[name].paths)
       rmSync(path.join(targetDir, relative), { recursive: true, force: true });
   removeEmptyDirs(targetDir);
+  const appDir = options.workspaceDir ? toWorkspace(targetDir, options.workspaceDir) : targetDir;
 
   for (const file of files(targetDir)) {
     if (path.basename(file) === "pnpm-lock.yaml" || statSync(file).size > 1_000_000) continue;
@@ -154,6 +184,6 @@ export function scaffold(options: {
     if (after !== before) writeFileSync(file, after);
   }
 
-  editPackageJson(targetDir, removed, names);
-  writeDevVars(targetDir);
+  editPackageJson(appDir, removed);
+  writeDevVars(appDir);
 }

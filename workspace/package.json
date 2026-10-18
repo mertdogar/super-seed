@@ -1,0 +1,12 @@
+{
+  "name": "super-seed",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter @super-seed/app dev",
+    "check": "pnpm -r check",
+    "format": "pnpm -r format",
+    "setup:local": "pnpm --filter @super-seed/app setup:local",
+    "setup:remote": "pnpm --filter @super-seed/app setup:remote",
+    "deploy": "pnpm --filter @super-seed/app run deploy"
+  }
+}

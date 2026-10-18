@@ -32,6 +32,9 @@ Optional features, all on by default:
 | Operator console | `operator`      | Platform admins: organizations, users, impersonation, plan grants |
 | API reference    | `api-reference` | Scalar docs for the OpenAPI spec at `/docs/api`                   |
 
+The app is a single package by default. With `--monorepo` it is a pnpm workspace instead: the app
+lives in `apps/app`, and the root runs `pnpm dev`, `pnpm check` and the other main commands.
+
 ## Options
 
 ```
@@ -40,6 +43,7 @@ create-super-seed [directory] [options]
   --name <name>        Display name, e.g. "Acme Cloud"
   --domain <domain>    Production domain, e.g. app.acme.com
   --features <list>    Comma-separated feature names, or "none"
+  --monorepo           Make a pnpm workspace with the app in apps/app
   --yes                Accept the defaults for anything not given
   --no-install         Skip pnpm install and local setup
   --no-git             Skip git init and the first commit
@@ -56,10 +60,12 @@ pnpm create @super-seed my-app --yes --features billing,api-keys
 `template/` is a complete app with every feature. The CLI:
 
 1. Copies it and deletes the files of the features you leave out, as listed in `src/features.ts`
-2. Removes the lines between `@feature <name>` and `@end <name>` markers for those features
-3. Renames `super-seed`, `Super Seed`, the domain and the API key prefix
-4. Writes `.dev.vars` with a fresh auth secret
-5. Installs, sets up the local database, formats and makes the first commit
+2. With `--monorepo`, moves the app into `apps/app`, adds the root files from `workspace/`, and
+   moves `pnpm-workspace.yaml`, the lockfile, `.github` and `.gitignore` up to the root
+3. Removes the lines between `@feature <name>` and `@end <name>` markers for those features
+4. Renames `super-seed`, `Super Seed`, the domain and the API key prefix
+5. Writes `.dev.vars` with a fresh auth secret
+6. Installs, sets up the local database, formats and makes the first commit
 
 ## Working on the template
 
@@ -90,9 +96,11 @@ To check a change:
 
 1. `pnpm check` here: typecheck, lint, format, unit tests and build of the CLI
 2. `pnpm check` in `template/`
-3. `node src/cli.ts ../try --yes --features none`, then `pnpm check` in `../try`
+3. `node src/cli.ts ../try --yes --features none`, then `pnpm check` in `../try`. Add `--monorepo`
+   to try the workspace layout
 
-CI runs all three, scaffolding seven feature combinations: all, none, and each feature left out.
+CI runs all three, scaffolding eight combinations: all features as a single app and as a monorepo,
+none, and each feature left out.
 
 ## Publishing
 

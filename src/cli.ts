@@ -26,7 +26,8 @@ Options:
   --name <name>        Display name, e.g. "Acme Cloud"
   --domain <domain>    Production domain, e.g. app.acme.com
   --features <list>    Comma-separated: ${featureNames.join(", ")}, or "none"
-  --yes                Accept the defaults for anything not given
+  --monorepo           Make a pnpm workspace with the app in apps/app
+  --yes               Accept the defaults for anything not given
   --no-install         Skip pnpm install and local setup
   --no-git             Skip git init and the first commit`;
 
@@ -37,6 +38,7 @@ const { values: flags, positionals } = parseArgs({
     name: { type: "string" },
     domain: { type: "string" },
     features: { type: "string" },
+    monorepo: { type: "boolean" },
     yes: { type: "boolean", short: "y" },
     install: { type: "boolean" },
     git: { type: "boolean" },
@@ -141,6 +143,13 @@ const chosen = flags.features
         }),
       );
 
+const monorepo =
+  flags.monorepo ??
+  (!flags.yes &&
+    answer(
+      await confirm({ message: "Set up as a pnpm workspace (monorepo)?", initialValue: false }),
+    ));
+
 const install =
   flags.install ??
   (flags.yes ||
@@ -152,6 +161,7 @@ const progress = spinner();
 progress.start("Copying the template");
 scaffold({
   templateDir: fileURLToPath(new URL("../template", import.meta.url)),
+  workspaceDir: monorepo ? fileURLToPath(new URL("../workspace", import.meta.url)) : undefined,
   targetDir,
   features: chosen,
   names: { slug, displayName, domain, keyPrefix: keyPrefix(slug) },
@@ -167,7 +177,7 @@ if (install) {
   run("pnpm", ["install", "--no-frozen-lockfile"], targetDir);
   log.step("Generating types and migrating the local database");
   run("pnpm", ["run", "setup:local"], targetDir);
-  run("pnpm", ["exec", "oxfmt", "--write", "."], targetDir);
+  run("pnpm", ["run", "format"], targetDir);
 }
 
 if (git) {

@@ -18,19 +18,20 @@ jobs:
       - run: pnpm check
 
   template:
-    name: template (${{ matrix.features }})
+    name: template (${{ matrix.args }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        features:
-          - projects,billing,api-keys,operator,api-reference
-          - none
-          - billing,api-keys,operator,api-reference
-          - projects,api-keys,operator,api-reference
-          - projects,billing,operator,api-reference
-          - projects,billing,api-keys,api-reference
-          - projects,billing,api-keys,operator
+        args:
+          - --features projects,billing,api-keys,operator,api-reference
+          - --features projects,billing,api-keys,operator,api-reference --monorepo
+          - --features none
+          - --features billing,api-keys,operator,api-reference
+          - --features projects,api-keys,operator,api-reference
+          - --features projects,billing,operator,api-reference
+          - --features projects,billing,api-keys,api-reference
+          - --features projects,billing,api-keys,operator
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
@@ -42,6 +43,6 @@ jobs:
             pnpm-lock.yaml
             template/pnpm-lock.yaml
       - run: pnpm install --frozen-lockfile
-      - run: node src/cli.ts "$RUNNER_TEMP/app" --yes --no-git --features "${{ matrix.features }}"
+      - run: node src/cli.ts "$RUNNER_TEMP/app" --yes --no-git ${{ matrix.args }}
       - run: pnpm check
         working-directory: ${{ runner.temp }}/app

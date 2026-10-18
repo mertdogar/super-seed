@@ -8,7 +8,8 @@
   },
   "files": [
     "dist",
-    "template"
+    "template",
+    "workspace"
   ],
   "type": "module",
   "scripts": {
